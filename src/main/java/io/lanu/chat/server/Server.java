@@ -61,5 +61,17 @@ public class Server {
                 connection.sendMessage(new Message(MessageType.NAME_REQUEST));
             }
         }
+
+        private void sendListOfUsers(Connection connection, String userName) throws IOException{
+            connectionMap.forEach((k, v) -> {
+                if (!k.equals(userName)){
+                    try {
+                        connection.sendMessage(new Message(MessageType.USER_ADDED, k));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        }
     }
 }
