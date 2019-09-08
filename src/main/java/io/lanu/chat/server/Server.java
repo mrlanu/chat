@@ -13,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Server {
     private static Map<String, Connection> connectionMap = new ConcurrentHashMap<>();
 
-    public void sendBroadcastMessage(Message message){
+    public static void sendBroadcastMessage(Message message){
         connectionMap.forEach((k, v) -> {
             try {
                 v.sendMessage(message);
@@ -72,6 +72,18 @@ public class Server {
                     }
                 }
             });
+        }
+
+        private void serverMainLoop(Connection connection, String userName) throws IOException, ClassNotFoundException{
+            while (true) {
+                Message message = connection.receiveMessage();
+                if (message.getMessageType().equals(MessageType.TEXT)){
+                    Server.sendBroadcastMessage(
+                            new Message(MessageType.TEXT, String.format("%s: %s", userName, message.getData())));
+                }else {
+                    ConsoleHelper.writeMessage("Error");
+                }
+            }
         }
     }
 }
