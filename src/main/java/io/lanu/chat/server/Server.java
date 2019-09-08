@@ -2,6 +2,7 @@ package io.lanu.chat.server;
 
 import io.lanu.chat.util.ConsoleHelper;
 import io.lanu.chat.util.Message;
+import io.lanu.chat.util.MessageType;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -42,6 +43,23 @@ public class Server {
 
         public Handler(Socket socket) {
             this.socket = socket;
+        }
+
+        private String serverHandshake(Connection connection) throws IOException, ClassNotFoundException {
+            while (true) {
+                connection.sendMessage(new Message(MessageType.NAME_REQUEST));
+                Message receivedMessage = connection.receiveMessage();
+                if(receivedMessage.getMessageType().equals(MessageType.USER_NAME)){
+                    String userName = receivedMessage.getData();
+                    if (userName.length() > 0){
+                        if (connectionMap.putIfAbsent(userName, connection) == null){
+                            connection.sendMessage(new Message(MessageType.NAME_ACCEPTED));
+                            return userName;
+                        }
+                    }
+                }
+                connection.sendMessage(new Message(MessageType.NAME_REQUEST));
+            }
         }
     }
 }
