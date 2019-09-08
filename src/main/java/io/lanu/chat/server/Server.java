@@ -67,9 +67,9 @@ public class Server {
             while (true) {
                 connection.sendMessage(new Message(MessageType.NAME_REQUEST));
                 Message receivedMessage = connection.receiveMessage();
-                if(receivedMessage.getMessageType().equals(MessageType.USER_NAME)){
+                if(receivedMessage.getMessageType() == MessageType.USER_NAME){
                     String userName = receivedMessage.getData();
-                    if (userName.length() > 0){
+                    if (!receivedMessage.getData().isEmpty()){
                         if (connectionMap.putIfAbsent(userName, connection) == null){
                             connection.sendMessage(new Message(MessageType.NAME_ACCEPTED));
                             return userName;
@@ -95,7 +95,7 @@ public class Server {
         private void serverMainLoop(Connection connection, String userName) throws IOException, ClassNotFoundException{
             while (true) {
                 Message message = connection.receiveMessage();
-                if (message.getMessageType().equals(MessageType.TEXT)){
+                if (message.getMessageType() == MessageType.TEXT){
                     Server.sendBroadcastMessage(
                             new Message(MessageType.TEXT, String.format("%s: %s", userName, message.getData())));
                 }else {
