@@ -28,6 +28,7 @@ public class Server {
         int port = ConsoleHelper.readInt();
         try (ServerSocket serverSocket = new ServerSocket(port)){
             ConsoleHelper.writeMessage("Server has been started on port - " + port);
+            ConsoleHelper.writeMessage("Waiting for new connection...");
             while (true){
                 Socket socket = serverSocket.accept();
                 Handler handler = new Handler(socket);
@@ -43,6 +44,23 @@ public class Server {
 
         public Handler(Socket socket) {
             this.socket = socket;
+        }
+
+        @Override
+        public void run() {
+            String userName = null;
+            ConsoleHelper.writeMessage("Got a new connection with - " + socket.getRemoteSocketAddress());
+            try (Connection connection = new Connection(socket)){
+                userName = serverHandshake(connection);
+                Server.sendBroadcastMessage(new Message(MessageType.USER_ADDED, userName));
+                sendListOfUsers(connection, userName);
+                serverMainLoop(connection, userName);
+            } catch (IOException | ClassNotFoundException e) {
+                ConsoleHelper.writeMessage("Error occurs during connection");
+            }
+            connectionMap.remove(userName);
+            sendBroadcastMessage(new Message(MessageType.USER_REMOVED, userName));
+            ConsoleHelper.writeMessage("Connection has been closed");
         }
 
         private String serverHandshake(Connection connection) throws IOException, ClassNotFoundException {
