@@ -6,6 +6,7 @@ import io.lanu.chat.util.Message;
 import io.lanu.chat.util.MessageType;
 
 import java.io.IOException;
+import java.net.Socket;
 
 public class Client {
     protected Connection connection;
@@ -103,6 +104,21 @@ public class Client {
                     default: throw new IOException("Unexpected MessageType");
                 }
             }
+        }
+
+        @Override
+        public void run() {
+            String address = getServerAddress();
+            int port = getServerPort();
+            try (Socket socket = new Socket(address, port);
+                 Connection connection = new Connection(socket)){
+                Client.this.connection = connection;
+                clientHandshake();
+                clientMainLoop();
+            } catch (IOException | ClassNotFoundException e) {
+                notifyConnectionStatusChanged(false);
+            }
+
         }
 
         void processIncomingMessage(String message){
