@@ -27,7 +27,7 @@ public class Client {
     }
 
     protected String getUserName(){
-        ConsoleHelper.writeMessage("Enter a nickname, please");
+        ConsoleHelper.writeMessage("Enter your nickname, please");
         return ConsoleHelper.readString();
     }
 
@@ -73,15 +73,47 @@ public class Client {
 
     public class SocketThread extends Thread{
 
-        public void processIncomingMessage(String message){
+        protected void clientHandshake() throws IOException, ClassNotFoundException{
+            while (true){
+                Message message = connection.receiveMessage();
+                if (message.getMessageType() == MessageType.NAME_REQUEST){
+                    connection.sendMessage(new Message(MessageType.USER_NAME, getUserName()));
+                }else if (message.getMessageType() == MessageType.NAME_ACCEPTED){
+                    notifyConnectionStatusChanged(true);
+                    break;
+                }else {
+                    throw new IOException("Unexpected MessageType");
+                }
+            }
+        }
+
+        protected void clientMainLoop() throws IOException, ClassNotFoundException{
+            while (true) {
+                Message message = connection.receiveMessage();
+                switch (message.getMessageType()){
+                    case TEXT:
+                        processIncomingMessage(message.getData());
+                        break;
+                    case USER_ADDED:
+                        informAboutAddingNewUser(message.getData());
+                        break;
+                    case USER_REMOVED:
+                        informAboutDeletingUser(message.getData());
+                        break;
+                    default: throw new IOException("Unexpected MessageType");
+                }
+            }
+        }
+
+        void processIncomingMessage(String message){
             ConsoleHelper.writeMessage(message);
         }
 
-        public void informAboutAddingNewUser(String userName){
+        void informAboutAddingNewUser(String userName){
             ConsoleHelper.writeMessage(String.format("User %s join to the chat.", userName));
         }
 
-        void informAboutDeletingNewUser(String userName){
+        void informAboutDeletingUser(String userName){
             ConsoleHelper.writeMessage(String.format("User %s left the chat.", userName));
         }
 
