@@ -22,15 +22,13 @@ public class Connection implements Closeable {
     }
 
     public void sendMessage(Message message) throws IOException{
-        Object lock = new Object();
-        synchronized (lock){
+        synchronized (out){
             out.writeObject(message);
         }
     }
 
     public Message receiveMessage() throws IOException, ClassNotFoundException{
-        Object lock = new Object();
-        synchronized (lock){
+        synchronized (in){
             return (Message) in.readObject();
         }
     }
