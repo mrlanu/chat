@@ -44,7 +44,7 @@ public class Client {
         try {
             connection.sendMessage(new Message(MessageType.TEXT, text));
         } catch (IOException e) {
-            ConsoleHelper.writeMessage("Errors occurs...");
+            ConsoleHelper.writeMessage("Error has been occurred...");
             clientConnected = false;
         }
     }
@@ -58,7 +58,7 @@ public class Client {
                 this.wait();
             }
         } catch (InterruptedException e) {
-            ConsoleHelper.writeMessage("Error occurs...");
+            ConsoleHelper.writeMessage("Error has been occurred...");
         }
         if (clientConnected){
             ConsoleHelper.writeMessage("Got connection. For exit enter 'exit'.");
@@ -69,7 +69,7 @@ public class Client {
                     sendTextMessage(s);
                 }
             }
-        }else ConsoleHelper.writeMessage("Something is wrong");
+        }else ConsoleHelper.writeMessage("Error has been occurred...");
     }
 
     public class SocketThread extends Thread{

@@ -18,7 +18,7 @@ public class Server {
             try {
                 v.sendMessage(message);
             } catch (IOException e) {
-                ConsoleHelper.writeMessage("Error occurs while sending the message...");
+                ConsoleHelper.writeMessage("Error has been occurred while sending the message...");
             }
         });
     }
@@ -35,7 +35,7 @@ public class Server {
                 handler.start();
             }
         } catch (IOException e) {
-            ConsoleHelper.writeMessage("Error occurs, Server has been stopped");
+            ConsoleHelper.writeMessage("Error has been occurred, Server has been stopped");
         }
     }
 
@@ -56,7 +56,7 @@ public class Server {
                 sendListOfUsers(connection, userName);
                 serverMainLoop(connection, userName);
             } catch (IOException | ClassNotFoundException e) {
-                ConsoleHelper.writeMessage("Error occurs during connection");
+                ConsoleHelper.writeMessage("Error has been occurred during connection");
             }
             connectionMap.remove(userName);
             sendBroadcastMessage(new Message(MessageType.USER_REMOVED, userName));
@@ -99,7 +99,7 @@ public class Server {
                     Server.sendBroadcastMessage(
                             new Message(MessageType.TEXT, String.format("%s: %s", userName, message.getData())));
                 }else {
-                    ConsoleHelper.writeMessage("Error");
+                    ConsoleHelper.writeMessage("Error has been occurred");
                 }
             }
         }
